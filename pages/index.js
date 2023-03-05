@@ -4,60 +4,10 @@ import { Inter } from 'next/font/google'
 import styles from 'art-verse/styles/Home.module.css'
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
-
-const inter = Inter({ subsets: ["latin"] });
+import { Canvas } from "@react-three/fiber";
+import Cylinder3d from "../components/Cylinder3d";
 
 export default function Home() {
-  const canvasRef = useRef(null);
-  const rendererRef = useRef(null);
-  const sceneRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const renderer = new THREE.WebGLRenderer({ canvas });
-    rendererRef.current = renderer;
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 5;
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-
-    // Add your Three.js code here to create the virtual art gallery
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    const onPointerMove = (event) => {
-      if (event.isDragging) {
-        cube.rotation.x += event.delta.y * 0.01;
-        cube.rotation.y += event.delta.x * 0.01;
-      }
-    };
-
-    rendererRef.current.domElement.addEventListener(
-      "pointermove",
-      onPointerMove
-    );
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    const animate = () => {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    return () => {
-      // Clean up Three.js resources when the component is unmounted
-      rendererRef.current.dispose();
-      sceneRef.current.remove(...sceneRef.current.children);
-    };
-  }, []);
-
   return (
     <>
       <Head>
@@ -67,7 +17,31 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <canvas ref={canvasRef} />
+        <section className="App-header">
+          {/* Canvas 1 */}
+          <Canvas>
+            <pointLight position={[10, 10, 10]} />
+            <ambientLight />
+            <Cylinder3d position={[-1.2, 0, 0]} />
+            <Cylinder3d position={[1.2, 0, 0]} />
+          </Canvas>
+
+          {/* Canvas 2 */}
+          <Canvas>
+            <pointLight position={[10, 10, 10]} />
+            <ambientLight intensity={0.5} />
+            <Cylinder3d position={[-1.2, 0, 0]} wireframe={true} />
+            <Cylinder3d position={[1.2, 0, 0]} wireframe={true} />
+          </Canvas>
+
+          {/* Canvas 3 */}
+          <Canvas>
+            <pointLight position={[10, 10, 10]} />
+            <ambientLight color={"red"} />
+            <Cylinder3d position={[-1.2, 0, 0]} />
+            <Cylinder3d position={[1.2, 0, 0]} />
+          </Canvas>
+        </section>
       </main>
     </>
   );
